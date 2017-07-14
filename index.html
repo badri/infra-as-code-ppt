@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Infrastructure as Code</title>
+<meta name="author" content="(Lakshmi Narasimhan)"/>
+
+<link rel="stylesheet" href="http://cdn.jsdelivr.net/reveal.js/3.0.0/css/reveal.css"/>
+<link rel="stylesheet" href="http://cdn.jsdelivr.net/reveal.js/3.0.0/css/theme/night.css" id="theme"/>
+
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'http://cdn.jsdelivr.net/reveal.js/3.0.0/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide">
+<h1>Infrastructure as Code</h1>
+<h2>Lakshmi Narasimhan</h2>
+<h2><a href="mailto:@lakshminp">@lakshminp</a></h2>
+<h2></h2>
+</section>
+
+<section id="sec-1">
+
+<h2 >About me</h2>
+<ul >
+<li class="fragment roll-in">full stack developer</li>
+<li class="fragment roll-in">building webapps since 2009</li>
+
+</ul>
+
+</section>
+<section id="sec-2">
+
+<h2 >Intro</h2>
+<ul >
+<li class="fragment roll-in">Takeaway: Treat your infrastrcture like you treat code</li>
+
+</ul>
+
+</section>
+<section id="sec-3">
+
+<h2 >What IaC is</h2>
+<ul >
+<li class="fragment roll-in">Modern approach to managing infrastructure</li>
+<li class="fragment roll-in">Treat infrastructure like software</li>
+<li class="fragment roll-in">Automation</li>
+
+</ul>
+
+</section>
+<section id="sec-4">
+
+<h2 >What IaC isn't</h2>
+<ul >
+<li class="fragment roll-in">cloud</li>
+<li class="fragment roll-in">buzzword(ex. Agile)</li>
+<li class="fragment roll-in">technology</li>
+<li class="fragment roll-in">opinionated</li>
+
+</ul>
+
+</section>
+<section id="sec-5">
+
+<h2 >Before IaC&#x2026;</h2>
+<ul >
+<li class="fragment roll-in">Snowflake servers</li>
+<li class="fragment roll-in">Manual deployment</li>
+<li class="fragment roll-in">Undocumented infrastructure</li>
+<li class="fragment roll-in">IT SLAs</li>
+
+</ul>
+
+</section>
+<section id="sec-6">
+
+<h2 >Goals</h2>
+<ul >
+<li class="fragment roll-in">Consistency</li>
+<li class="fragment roll-in">Idempotence</li>
+<li class="fragment roll-in">Process oriented, not people oriented</li>
+<li class="fragment roll-in">NoOps</li>
+
+</ul>
+
+</section>
+<section id="sec-7">
+
+<h2 >Benefits</h2>
+<ul >
+<li class="fragment roll-in">Deploy continuously</li>
+<li class="fragment roll-in">Dev/production parity</li>
+<li class="fragment roll-in">Tighter feedback loops</li>
+
+</ul>
+
+</section>
+<section id="sec-8">
+
+<h2 >How to do IaC</h2>
+<ul >
+<li class="fragment roll-in">Version control everything</li>
+<li class="fragment roll-in">Incremental changes</li>
+<li class="fragment roll-in">Test driven</li>
+<li class="fragment roll-in">Self documenting</li>
+
+</ul>
+
+</section>
+<section id="sec-9">
+
+<h2 >Types of tools</h2>
+<ul >
+<li class="fragment roll-in">Definition tools</li>
+<li class="fragment roll-in">Configuration/provisioning tools</li>
+<li class="fragment roll-in">Alerting/logging/monitoring</li>
+
+</ul>
+
+</section>
+<section id="sec-10">
+
+<h2 >Definition</h2>
+<p>
+Ex: Terraform
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-text">resource "aws_instance" "web" {
+  ami = "ami-12345678"
+  instance_type = "t1.micro"
+  tags {
+    Name = "HelloWorld"
+  }
+  security_groups = [ "${aws_security_group.my_security_group.id}" ]
+}
+</pre>
+</div>
+<p>
+<a href="https://github.com/smakam/lampapp/blob/master/terraform/aws/main.tf">https://github.com/smakam/lampapp/blob/master/terraform/aws/main.tf</a>
+</p>
+
+</section>
+<section id="sec-11">
+
+<h2 >Definition</h2>
+<p>
+Ex: Ansible
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-yaml">- <span style="color: #ffffff;">name</span>: Basic Provisioning of two m3.medium EC2 instance
+  <span style="color: #ffffff;">ec2</span>:
+    <span style="color: #ffffff;">aws_access_key</span>: <span style="color: #B3DE81;">"{{ aws_id }}"</span>
+    <span style="color: #ffffff;">aws_secret_key</span>: <span style="color: #B3DE81;">"{{ aws_key }}"</span>
+    <span style="color: #ffffff;">region</span>: <span style="color: #B3DE81;">"{{ aws_region }}"</span>
+    <span style="color: #ffffff;">image</span>: ami-f0091d91
+    <span style="color: #ffffff;">instance_type</span>: m3.medium
+    <span style="color: #ffffff;">count</span>: 2
+</pre>
+</div>
+
+</section>
+<section id="sec-12">
+
+<h2 >Configuration</h2>
+<p>
+Ex: Ansible
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-yaml"><span style="color: #8593AE;">---</span>
+- <span style="color: #ffffff;">hosts</span>: server
+  <span style="color: #ffffff;">sudo</span>: <span style="color: #FFDB45;">yes</span>
+  <span style="color: #ffffff;">sudo_user</span>: root
+
+  <span style="color: #ffffff;">tasks</span>:
+
+  - <span style="color: #ffffff;">name</span>: install mysql-server
+    <span style="color: #ffffff;">apt</span>: name=mysql-server state=present update_cache=yes
+
+  - <span style="color: #ffffff;">name</span>: install ansible dependencies
+    <span style="color: #ffffff;">apt</span>: name=python-mysqldb state=present
+
+  - <span style="color: #ffffff;">name</span>: Ensure mysql is running 
+    <span style="color: #ffffff;">service</span>: name=mysql state=started
+</pre>
+</div>
+
+</section>
+<section id="sec-13">
+
+<h2 >Configuration</h2>
+<p>
+Ex: Chef
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-text">mysql_service 'default' do
+  port '3306'
+  version '5.5'
+  name 'localhost'
+  initial_root_password 'p4ssw0rd'
+  action [:create, :start]
+end
+
+mysql_config 'default' do
+  source 'my.cnf.erb'
+  notifies :restart, 'mysql_service[default]'
+  action :create
+end
+</pre>
+</div>
+
+</section>
+<section id="sec-14">
+
+<h2 >Configuration</h2>
+<p>
+Ex: Docker
+</p>
+<div class="org-src-container">
+
+<pre  class="src src-text">USER nginx
+EXPOSE 4443
+WORKDIR /opt/
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+CMD ["nginx", "-c", "/nginx/nginx.conf", "-g", "daemon off;"]
+</pre>
+</div>
+
+</section>
+<section id="sec-15">
+
+<h2 >Infrastructure services</h2>
+<p>
+Alerting
+<img src="./images/nagios.jpg" alt="nagios.jpg" />
+</p>
+
+</section>
+<section id="sec-16">
+
+<h2 >Monitoring</h2>
+<p>
+Sensu
+<img src="./images/sensu.png" alt="sensu.png" />
+</p>
+
+</section>
+<section id="sec-17">
+
+<h2 >Logging</h2>
+<p>
+ELK
+<img src="./images/elk.png" alt="elk.png" />
+</p>
+
+</section>
+<section id="sec-18">
+
+<h2 >Demo time</h2>
+
+</section>
+<section id="sec-19">
+
+<h2 >Resources</h2>
+</section>
+<section>
+<section id="sec-19-1">
+
+<h3 >Infrastructure as Code book</h3>
+<p>
+<a href="http://infrastructure-as-code.com/">http://infrastructure-as-code.com/</a>
+</p>
+</section>
+
+</section>
+<section id="sec-20">
+
+<h2 >?s</h2>
+</section>
+</div>
+</div>
+
+<script src="http://cdn.jsdelivr.net/reveal.js/3.0.0/lib/js/head.min.js"></script>
+<script src="http://cdn.jsdelivr.net/reveal.js/3.0.0/js/reveal.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: true,
+progress: true,
+history: false,
+center: true,
+slideNumber: true,
+rollingLinks: false,
+keyboard: true,
+overview: true,
+
+theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+transitionSpeed: 'default',
+multiplex: {
+    secret: '', // null if client
+    id: '', // id, obtained from socket.io server
+    url: '' // Location of socket.io server
+},
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: 'http://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+ { src: 'http://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'http://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'http://cdn.jsdelivr.net/reveal.js/3.0.0/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+]
+});
+</script>
+</body>
+</html>

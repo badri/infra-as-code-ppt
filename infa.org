@@ -1,0 +1,162 @@
+#+STARTUP: indent
+#+STARTUP: showeverything
+#+REVEAL_ROOT: http://cdn.jsdelivr.net/reveal.js/3.0.0/
+#+REVEAL_THEME: night
+#+REVEAL_HLEVEL: 2
+#+REVEAL_PLUGINS: (highlight markdown notes)
+#+OPTIONS: toc:0
+
+#+TITLE: Infrastructure as Code
+#+AUTHOR: Lakshmi Narasimhan
+#+EMAIL: @lakshminp
+
+* About me
+#+ATTR_REVEAL: :frag (roll-in roll-in roll-in roll-in)
+- full stack developer
+- building webapps since 2009
+
+* Intro 
+#+ATTR_REVEAL: :frag (roll-in roll-in)
+- Takeaway: Treat your infrastrcture like you treat code
+
+* What IaC is
+#+ATTR_REVEAL: :frag (roll-in roll-in roll-in roll-in)
+- Modern approach to managing infrastructure
+- Treat infrastructure like software
+- Automation
+
+* What IaC isn't
+#+ATTR_REVEAL: :frag (roll-in roll-in roll-in roll-in)
+- cloud
+- buzzword(ex. Agile)
+- technology
+- opinionated
+
+* Before IaC...
+#+ATTR_REVEAL: :frag (roll-in roll-in roll-in roll-in)
+- Snowflake servers
+- Manual deployment
+- Undocumented infrastructure
+- IT SLAs
+
+* Goals
+#+ATTR_REVEAL: :frag (roll-in roll-in roll-in roll-in)
+- Consistency
+- Idempotence
+- Process oriented, not people oriented
+- NoOps
+
+* Benefits
+#+ATTR_REVEAL: :frag (roll-in roll-in roll-in roll-in)
+- Deploy continuously
+- Dev/production parity
+- Tighter feedback loops
+
+* How to do IaC
+#+ATTR_REVEAL: :frag (roll-in roll-in roll-in roll-in)
+- Version control everything
+- Incremental changes
+- Test driven
+- Self documenting
+
+* Types of tools
+#+ATTR_REVEAL: :frag (roll-in roll-in roll-in roll-in)
+- Definition tools
+- Configuration/provisioning tools
+- Alerting/logging/monitoring
+
+* Definition
+Ex: Terraform
+#+BEGIN_SRC text
+resource "aws_instance" "web" {
+  ami = "ami-12345678"
+  instance_type = "t1.micro"
+  tags {
+    Name = "HelloWorld"
+  }
+  security_groups = [ "${aws_security_group.my_security_group.id}" ]
+}
+#+END_SRC
+https://github.com/smakam/lampapp/blob/master/terraform/aws/main.tf
+
+* Definition
+Ex: Ansible
+#+BEGIN_SRC yaml
+  - name: Basic Provisioning of two m3.medium EC2 instance
+    ec2:
+      aws_access_key: "{{ aws_id }}"
+      aws_secret_key: "{{ aws_key }}"
+      region: "{{ aws_region }}"
+      image: ami-f0091d91
+      instance_type: m3.medium
+      count: 2
+#+END_SRC
+
+* Configuration
+Ex: Ansible
+#+BEGIN_SRC yaml
+---
+- hosts: server
+  sudo: yes
+  sudo_user: root
+
+  tasks:
+
+  - name: install mysql-server
+    apt: name=mysql-server state=present update_cache=yes
+
+  - name: install ansible dependencies
+    apt: name=python-mysqldb state=present
+
+  - name: Ensure mysql is running 
+    service: name=mysql state=started
+#+END_SRC
+
+* Configuration
+Ex: Chef
+#+BEGIN_SRC text
+mysql_service 'default' do
+  port '3306'
+  version '5.5'
+  name 'localhost'
+  initial_root_password 'p4ssw0rd'
+  action [:create, :start]
+end
+
+mysql_config 'default' do
+  source 'my.cnf.erb'
+  notifies :restart, 'mysql_service[default]'
+  action :create
+end
+#+END_SRC
+
+* Configuration
+Ex: Docker
+#+BEGIN_SRC text
+USER nginx
+EXPOSE 4443
+WORKDIR /opt/
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+CMD ["nginx", "-c", "/nginx/nginx.conf", "-g", "daemon off;"]
+#+END_SRC
+
+* Infrastructure services
+Alerting
+[[./images/nagios.jpg]]
+
+* Monitoring
+Sensu
+[[./images/sensu.png]]
+
+* Logging
+ELK
+[[./images/elk.png]]
+
+* Demo time
+
+* Resources
+
+** Infrastructure as Code book
+http://infrastructure-as-code.com/
+
+* ?s
